@@ -7,8 +7,11 @@ import TextType from "@/components/band/TextType";
 
 const skills = ["Typescript", "React.js", "Tailwind"];
 
-export default function Hero() {
-  const [showApp, setShowApp] = useState(false);
+type HeroProps = {
+  showApp: boolean;
+};
+
+export default function Hero({ showApp }: HeroProps) {
   const [startAnim, setStartAnim] = useState(false);
 
   useEffect(() => {
@@ -16,7 +19,6 @@ export default function Hero() {
 
     if (heroPlayed === "true") {
       setStartAnim(true);
-      setShowApp(true);
       return;
     }
 
@@ -27,9 +29,6 @@ export default function Hero() {
     }, delay);
 
     const appTimer = setTimeout(() => {
-      setShowApp(true);
-
-      // 🔥 simpan setelah animasi selesai
       sessionStorage.setItem("heroPlayed", "true");
     }, delay + 1500);
 
