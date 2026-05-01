@@ -3,13 +3,8 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/app/admin/Sidebar";
 import { supabase } from "@/lib/supabase";
-import {
-  Plus,
-  Trash2,
-  Pencil,
-  X,
-  Upload,
-} from "lucide-react";
+import { Plus, Trash2, Pencil, X, Upload } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function TechStackPage() {
   const [techStacks, setTechStacks] = useState<any[]>([]);
@@ -50,12 +45,15 @@ export default function TechStackPage() {
   const fetchTechStacks = async () => {
     const { data } = await supabase
       .from("tech_stack")
-      .select("*")
-      .order("created_at", {
-        ascending: false,
-      });
+      .select("*");
 
-    setTechStacks(data || []);
+    const sorted = (data || []).sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() -
+        new Date(b.created_at).getTime()
+    );
+
+    setTechStacks(sorted);
     setLoading(false);
   };
 
@@ -66,9 +64,7 @@ export default function TechStackPage() {
     setEditId(null);
   };
 
-  const handleImage = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -120,20 +116,55 @@ export default function TechStackPage() {
     setSaving(false);
     setOpen(false);
     resetForm();
+
+    fetchTechStacks();
   };
 
   const handleDelete = async (id: number) => {
-    const ok = confirm("Delete tech stack?");
-    if (!ok) return;
+    const result = await Swal.fire({
+      title: "Delete Tech Stack?",
+      text: "Data yang dihapus tidak bisa dikembalikan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete",
+      cancelButtonText: "Cancel",
+      background: "#111",
+      color: "#fff",
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#27272a",
+      reverseButtons: true,
+    });
 
-    await supabase
+    if (!result.isConfirmed) return;
+
+    const { error } = await supabase
       .from("tech_stack")
       .delete()
       .eq("id", id);
 
-    setTechStacks((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
+    if (!error) {
+      setTechStacks((prev) =>
+        prev.filter((item) => item.id !== id)
+      );
+
+      Swal.fire({
+        title: "Deleted!",
+        text: "Tech stack berhasil dihapus.",
+        icon: "success",
+        timer: 1800,
+        showConfirmButton: false,
+        background: "#111",
+        color: "#fff",
+      });
+    } else {
+      Swal.fire({
+        title: "Failed",
+        text: "Gagal menghapus tech stack.",
+        icon: "error",
+        background: "#111",
+        color: "#fff",
+      });
+    }
   };
 
   const handleEdit = (item: any) => {
@@ -214,9 +245,7 @@ export default function TechStackPage() {
                       </button>
 
                       <button
-                        onClick={() =>
-                          handleDelete(item.id)
-                        }
+                        onClick={() => handleDelete(item.id)}
                         className="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 flex items-center justify-center hover:bg-red-500/20 transition"
                       >
                         <Trash2 size={14} />
@@ -241,9 +270,7 @@ export default function TechStackPage() {
             {/* HEADER */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg sm:text-xl font-semibold">
-                {editId
-                  ? "Edit Tech"
-                  : "Add Tech"}
+                {editId ? "Edit Tech" : "Add Tech"}
               </h2>
 
               <button
@@ -289,9 +316,7 @@ export default function TechStackPage() {
             <input
               placeholder="Tech Name"
               value={name}
-              onChange={(e) =>
-                setName(e.target.value)
-              }
+              onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none mb-5 text-sm"
             />
 

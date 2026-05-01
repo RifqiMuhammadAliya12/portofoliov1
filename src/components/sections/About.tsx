@@ -1,15 +1,9 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { motion, Variants } from 'framer-motion'
-import {
-  Code,
-  Award,
-  Globe,
-  FileText,
-  ArrowUpRight,
-} from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { useEffect, useState } from "react";
+import { motion, Variants } from "framer-motion";
+import { Code, Award, Globe, FileText, ArrowUpRight } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 /* ================== ANIMATION ================== */
 
@@ -20,20 +14,20 @@ const container: Variants = {
       staggerChildren: 0.16,
     },
   },
-}
+};
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 35, filter: 'blur(8px)' },
+  hidden: { opacity: 0, y: 35, filter: "blur(8px)" },
   show: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
+    filter: "blur(0px)",
     transition: {
       duration: 1,
       ease: [0.22, 1, 0.36, 1],
     },
   },
-}
+};
 
 const slideLeft: Variants = {
   hidden: { opacity: 0, x: 70, rotate: 2 },
@@ -46,7 +40,7 @@ const slideLeft: Variants = {
       ease: [0.22, 1, 0.36, 1],
     },
   },
-}
+};
 
 const pop: Variants = {
   hidden: { opacity: 0, scale: 0.92, y: 25 },
@@ -59,92 +53,90 @@ const pop: Variants = {
       ease: [0.22, 1, 0.36, 1],
     },
   },
-}
+};
 
 /* ================== COMPONENT ================== */
 
 export default function About() {
-  const [isMobile, setIsMobile] = useState<boolean | null>(null)
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
-  const [projectCount, setProjectCount] = useState(0)
-  const [certificateCount, setCertificateCount] = useState(0)
+  const [projectCount, setProjectCount] = useState(0);
+  const [certificateCount, setCertificateCount] = useState(0);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
+    const check = () => setIsMobile(window.innerWidth < 768);
 
-    check()
-    window.addEventListener('resize', check)
+    check();
+    window.addEventListener("resize", check);
 
-    fetchStats()
+    fetchStats();
 
-    return () => window.removeEventListener('resize', check)
-  }, [])
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const fetchStats = async () => {
     try {
       const { count: projects } = await supabase
-        .from('projects')
-        .select('*', { count: 'exact', head: true })
+        .from("projects")
+        .select("*", { count: "exact", head: true });
 
       const { count: certificates } = await supabase
-        .from('certificates')
-        .select('*', { count: 'exact', head: true })
+        .from("certificates")
+        .select("*", { count: "exact", head: true });
 
-      setProjectCount(projects || 0)
-      setCertificateCount(certificates || 0)
+      setProjectCount(projects || 0);
+      setCertificateCount(certificates || 0);
     } catch {
-      setProjectCount(0)
-      setCertificateCount(0)
+      setProjectCount(0);
+      setCertificateCount(0);
     }
-  }
+  };
 
   const scrollToPortfolio = () => {
-    const el = document.getElementById('portfolio')
+    const el = document.getElementById("portfolio");
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
+      el.scrollIntoView({ behavior: "smooth" });
     }
-  }
+  };
 
-  if (isMobile === null) return null
+  if (isMobile === null) return null;
 
   const stats = [
     {
       icon: <Code size={16} />,
       value: String(projectCount),
-      title: 'PROJECTS',
+      title: "PROJECTS",
     },
     {
       icon: <Award size={16} />,
       value: String(certificateCount),
-      title: 'CERTIFICATES',
+      title: "CERTIFICATES",
     },
     {
       icon: <Globe size={16} />,
-      value: '0',
-      title: 'YEARS OF EXPERIENCE',
+      value: String(projectCount + certificateCount),
+      title: "COMPLETED WORKS",
     },
-  ]
+  ];
 
   return (
     <section
       id="about"
       style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'flex-start',
-        padding: isMobile
-          ? '60px 24px 30px'
-          : '80px 60px 30px 120px',
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "flex-start",
+        padding: isMobile ? "60px 24px 30px" : "80px 60px 30px 120px",
       }}
     >
-      <div style={{ width: '100%' }}>
+      <div style={{ width: "100%" }}>
         <div
           style={{
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '32px',
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "32px",
           }}
         >
           {/* LEFT */}
@@ -152,10 +144,10 @@ export default function About() {
             variants={container}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: false, margin: '-80px' }}
+            viewport={{ once: false, margin: "-80px" }}
             style={{
-              maxWidth: '600px',
-              width: '100%',
+              maxWidth: "600px",
+              width: "100%",
             }}
           >
             <motion.div variants={fadeUp} style={{ marginBottom: 16 }}>
@@ -163,8 +155,8 @@ export default function About() {
                 style={{
                   fontFamily: "'DM Mono', monospace",
                   fontSize: 12,
-                  color: 'var(--text-muted)',
-                  letterSpacing: '0.2em',
+                  color: "var(--text-muted)",
+                  letterSpacing: "0.2em",
                 }}
               >
                 ABOUT ME
@@ -174,10 +166,10 @@ export default function About() {
             <motion.div variants={fadeUp}>
               <div
                 style={{
-                  fontSize: isMobile ? 32 : 'clamp(32px,5vw,46px)',
+                  fontSize: isMobile ? 32 : "clamp(32px,5vw,46px)",
                   fontWeight: 800,
                   lineHeight: 1.03,
-                  color: 'var(--text-primary)',
+                  color: "var(--text-primary)",
                 }}
               >
                 <div>Rifqi</div>
@@ -201,15 +193,15 @@ export default function About() {
               style={{
                 marginTop: 18,
                 fontSize: 14,
-                color: 'var(--text-secondary)',
+                color: "var(--text-secondary)",
                 lineHeight: 1.75,
-                maxWidth: isMobile ? '100%' : '470px',
+                maxWidth: isMobile ? "100%" : "490px",
               }}
             >
-              I’m a fresh graduate frontend developer with a strong eye for
-              design and a love for building things that live on the web. I
-              focus on writing clean, maintainable code while making sure every
-              pixel looks intentional.
+              Fresh Graduate SMK Rekayasa Perangkat Lunak lulusan 2026 dengan
+              passion di bidang frontend development dan UI modern. Berfokus
+              pada pembuatan website clean, responsif, dan visual yang kuat
+              untuk menghadirkan pengalaman digital yang optimal.
             </motion.p>
 
             {/* QUOTE */}
@@ -227,78 +219,92 @@ export default function About() {
               }}
               style={{
                 marginTop: 18,
-                padding: '12px 16px',
+                padding: "12px 25px",
                 borderRadius: 10,
-                border: '1px solid var(--border)',
-                background: 'var(--bg-card)',
+                border: "1px solid var(--border)",
+                background: "var(--bg-card)",
                 fontSize: 12,
-                fontStyle: 'italic',
+                fontStyle: "italic",
+                display: "inline-block",
+                width: "fit-content",
               }}
             >
-              "Leveraging AI as a professional tool, not a replacement."
+              “Turning ideas into clean, modern, and meaningful digital
+              experiences.”
             </motion.div>
 
             {/* BUTTONS */}
             <motion.div
               variants={fadeUp}
               style={{
-                display: 'flex',
+                display: "flex",
                 gap: 10,
                 marginTop: 18,
-                flexWrap: 'wrap',
+                flexWrap: "wrap",
               }}
             >
-              <button
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '10px 18px',
-                  borderRadius: 8,
-                  border: '1px solid white',
-                  background: 'white',
-                  color: 'black',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: '0.3s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                  e.currentTarget.style.color = 'white'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'white'
-                  e.currentTarget.style.color = 'black'
-                }}
+              {/* DOWNLOAD CV */}
+              <a
+                href="https://drive.google.com/file/d/1cFqZ0TY0U0I51K0Tchv8E4sbOv5yAZ9x/view?usp=drive_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none" }}
               >
-                <FileText size={14} />
-                Download CV
-              </button>
+                <button
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "10px 18px",
+                    borderRadius: 8,
+                    border: "1px solid white",
+                    background: "white",
+                    color: "black",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "transform 0.25s ease, opacity 0.25s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform =
+                      "translateY(-2px) scale(1.03)";
+                    e.currentTarget.style.opacity = "0.92";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0) scale(1)";
+                    e.currentTarget.style.opacity = "1";
+                  }}
+                >
+                  <FileText size={14} />
+                  Download CV
+                </button>
+              </a>
 
+              {/* VIEW PROJECTS */}
               <button
                 onClick={scrollToPortfolio}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   gap: 6,
-                  padding: '10px 18px',
+                  padding: "10px 18px",
                   borderRadius: 8,
-                  border: '1px solid white',
-                  background: 'transparent',
-                  color: 'white',
+                  border: "1px solid white",
+                  background: "transparent",
+                  color: "white",
                   fontSize: 13,
                   fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: '0.3s ease',
+                  cursor: "pointer",
+                  transition: "transform 0.25s ease, opacity 0.25s ease",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'white'
-                  e.currentTarget.style.color = 'black'
+                  e.currentTarget.style.transform =
+                    "translateY(-2px) scale(1.03)";
+                  e.currentTarget.style.opacity = "0.85";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                  e.currentTarget.style.color = 'white'
+                  e.currentTarget.style.transform = "translateY(0) scale(1)";
+                  e.currentTarget.style.opacity = "1";
                 }}
               >
                 <ArrowUpRight size={14} />
@@ -315,34 +321,30 @@ export default function About() {
               whileInView="show"
               viewport={{ once: false }}
               style={{
-                width: '48%',
-                display: 'flex',
-                justifyContent: 'flex-end',
+                width: "48%",
+                display: "flex",
+                justifyContent: "flex-end",
               }}
             >
               <div
                 style={{
                   padding: 12,
-                  borderRadius: '50%',
-                  border: '1px solid var(--border)',
-                  transform: 'translateX(-80px)',
+                  borderRadius: "50%",
+                  border: "1px solid var(--border)",
+                  transform: "translateX(-80px)",
                 }}
               >
-                <div
+                <img
+                  src="/assets/PP.png"
+                  alt="Profile"
                   style={{
                     width: 240,
                     height: 240,
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.05)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--text-secondary)',
-                    fontSize: 13,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    display: "block",
                   }}
-                >
-                  no profile
-                </div>
+                />
               </div>
             </motion.div>
           )}
@@ -355,8 +357,8 @@ export default function About() {
           whileInView="show"
           viewport={{ once: false }}
           style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
             gap: 18,
             marginTop: 36,
           }}
@@ -367,23 +369,23 @@ export default function About() {
               variants={pop}
               whileHover={{ scale: 1.03 }}
               style={{
-                position: 'relative',
+                position: "relative",
                 padding: 18,
                 borderRadius: 16,
-                border: '1px solid var(--border)',
-                background: 'var(--bg-card)',
-                cursor: 'pointer',
+                border: "1px solid var(--border)",
+                background: "var(--bg-card)",
+                cursor: "pointer",
               }}
             >
               <div
                 style={{
                   width: 34,
                   height: 34,
-                  borderRadius: '50%',
-                  border: '1px solid var(--border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  borderRadius: "50%",
+                  border: "1px solid var(--border)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   marginBottom: 10,
                 }}
               >
@@ -392,7 +394,7 @@ export default function About() {
 
               <div
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: 16,
                   right: 16,
                   fontSize: 18,
@@ -405,7 +407,7 @@ export default function About() {
               <div
                 style={{
                   fontSize: 11,
-                  letterSpacing: '0.08em',
+                  letterSpacing: "0.08em",
                 }}
               >
                 {item.title}
@@ -414,10 +416,10 @@ export default function About() {
               <div
                 onClick={scrollToPortfolio}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   bottom: 14,
                   right: 14,
-                  cursor: 'pointer',
+                  cursor: "pointer",
                 }}
               >
                 <ArrowUpRight size={15} />
@@ -427,5 +429,5 @@ export default function About() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

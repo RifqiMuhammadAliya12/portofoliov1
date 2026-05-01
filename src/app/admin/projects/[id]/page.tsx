@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import Swal from "sweetalert2";
+
 import {
   Code2,
   Layers,
@@ -42,21 +44,76 @@ export default function ProjectDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm("Hapus project ini?")) return;
+  const result = await Swal.fire({
+    title: "Hapus project?",
+    text: "Project yang dihapus tidak bisa dikembalikan.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Ya, Hapus",
+    cancelButtonText: "Batal",
+    background: "#101010",
+    color: "#fff",
+    confirmButtonColor: "#ef4444",
+    cancelButtonColor: "#27272a",
+    reverseButtons: true,
+  });
 
-    await supabase.from("projects").delete().eq("id", id);
+  if (!result.isConfirmed) return;
+
+  const { error } = await supabase.from("projects").delete().eq("id", id);
+
+  if (!error) {
+    await Swal.fire({
+      title: "Berhasil!",
+      text: "Project berhasil dihapus.",
+      icon: "success",
+      timer: 1800,
+      showConfirmButton: false,
+      background: "#101010",
+      color: "#fff",
+    });
+
     router.push("/admin/projects");
-  };
+  } else {
+    Swal.fire({
+      title: "Gagal",
+      text: "Project gagal dihapus.",
+      icon: "error",
+      background: "#101010",
+      color: "#fff",
+    });
+  }
+};
 
   const handleUpdate = async () => {
-    const { error } = await supabase.from("projects").update(form).eq("id", id);
+  const { error } = await supabase
+    .from("projects")
+    .update(form)
+    .eq("id", id);
 
-    if (!error) {
-      setProject(form);
-      setEditMode(false);
-    }
-  };
+  if (!error) {
+    setProject(form);
+    setEditMode(false);
 
+    Swal.fire({
+      title: "Berhasil",
+      text: "Project berhasil diperbarui.",
+      icon: "success",
+      timer: 1800,
+      showConfirmButton: false,
+      background: "#101010",
+      color: "#fff",
+    });
+  } else {
+    Swal.fire({
+      title: "Gagal",
+      text: "Update project gagal.",
+      icon: "error",
+      background: "#101010",
+      color: "#fff",
+    });
+  }
+};
   if (!project)
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white">

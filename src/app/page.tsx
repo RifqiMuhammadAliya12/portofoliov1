@@ -8,7 +8,7 @@ import Navbar from '@/components/ui/Navbar'
 import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
 import PortfolioShowcase from '@/components/sections/PortfolioShowcase'
-import ContactSection from '@/components/sections/ContactSection'
+import ContactSection from '@/components/sections/contact/ContactSection'
 import WelcomeScreen from '@/components/WelcomeScreen'
 
 import { hasPlayedIntro, setIntroPlayed } from '@/lib/introState'

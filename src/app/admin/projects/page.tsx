@@ -40,18 +40,31 @@ export default function ProjectsPage() {
   const fetchProjects = async () => {
     const { data, error } = await supabase
       .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .select("*");
 
-    if (!error) {
-      setProjects(data || []);
+    if (!error && data) {
+      const sortedProjects = data.sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() -
+          new Date(b.created_at).getTime()
+      );
+
+      setProjects(sortedProjects);
     }
 
     setLoading(false);
   };
 
   const handleAdd = (newProject: any) => {
-    setProjects((prev) => [newProject, ...prev]);
+    setProjects((prev) => {
+      const updated = [...prev, newProject];
+
+      return updated.sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() -
+          new Date(b.created_at).getTime()
+      );
+    });
   };
 
   return (

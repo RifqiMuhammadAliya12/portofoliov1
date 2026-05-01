@@ -1,15 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Plus,
-  Trash2,
-  Pencil,
-  X,
-  Upload,
-} from "lucide-react";
+import { Plus, Trash2, Pencil, X, Upload } from "lucide-react";
 import Sidebar from "@/app/admin/Sidebar";
 import { supabase } from "@/lib/supabase";
+import Swal from "sweetalert2";
 
 export default function CertificatesPage() {
   const [certificates, setCertificates] = useState<any[]>([]);
@@ -38,7 +33,7 @@ export default function CertificatesPage() {
         },
         () => {
           fetchCertificates();
-        }
+        },
       )
       .subscribe();
 
@@ -48,16 +43,16 @@ export default function CertificatesPage() {
   }, []);
 
   const fetchCertificates = async () => {
-    const { data } = await supabase
-      .from("certificates")
-      .select("*")
-      .order("created_at", {
-        ascending: false,
-      });
+  const { data } = await supabase
+    .from("certificates")
+    .select("*")
+    .order("created_at", {
+      ascending: true,
+    });
 
-    setCertificates(data || []);
-    setLoading(false);
-  };
+  setCertificates(data || []);
+  setLoading(false);
+};
 
   const resetForm = () => {
     setTitle("");
@@ -66,9 +61,7 @@ export default function CertificatesPage() {
     setEditId(null);
   };
 
-  const handleImage = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -118,25 +111,52 @@ export default function CertificatesPage() {
     }
 
     setSaving(false);
-    setOpen(false);
-    resetForm();
+setOpen(false);
+resetForm();
+
+fetchCertificates
   };
 
   const handleDelete = async (id: number) => {
-    const confirmDelete = confirm(
-      "Delete certificate?"
-    );
+    const result = await Swal.fire({
+      title: "Delete Certificate?",
+      text: "Certificate yang dihapus tidak bisa dikembalikan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete",
+      cancelButtonText: "Cancel",
+      background: "#111",
+      color: "#fff",
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#27272a",
+      reverseButtons: true,
+    });
 
-    if (!confirmDelete) return;
+    if (!result.isConfirmed) return;
 
-    await supabase
-      .from("certificates")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("certificates").delete().eq("id", id);
 
-    setCertificates((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
+    if (!error) {
+      setCertificates((prev) => prev.filter((item) => item.id !== id));
+
+      Swal.fire({
+        title: "Deleted!",
+        text: "Certificate berhasil dihapus.",
+        icon: "success",
+        timer: 1800,
+        showConfirmButton: false,
+        background: "#111",
+        color: "#fff",
+      });
+    } else {
+      Swal.fire({
+        title: "Failed",
+        text: "Gagal menghapus certificate.",
+        icon: "error",
+        background: "#111",
+        color: "#fff",
+      });
+    }
   };
 
   const handleEdit = (item: any) => {
@@ -157,9 +177,7 @@ export default function CertificatesPage() {
           {/* HEADER */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold">
-                Certificates
-              </h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">Certificates</h1>
 
               <p className="text-sm text-white/40 mt-1">
                 Manage your certificates
@@ -180,70 +198,62 @@ export default function CertificatesPage() {
 
           {/* CONTENT */}
           {loading ? (
-            <div className="text-white/50 text-sm">
-              Loading certificates...
-            </div>
+            <div className="text-white/50 text-sm">Loading certificates...</div>
           ) : certificates.length === 0 ? (
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] h-[240px] flex items-center justify-center text-white/35">
               No certificates found
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 pb-6">
-  {certificates.map((item) => (
-    <div
-      key={item.id}
-      className="border border-white/10 bg-white/[0.03] rounded-2xl p-4 hover:border-white/25 hover:-translate-y-1 transition-all duration-300 flex flex-col"
-    >
-      {/* IMAGE */}
-      <div className="w-full h-[150px] rounded-xl overflow-hidden bg-white/[0.03] mb-4">
-        {item.image_url ? (
-          <img
-            src={item.image_url}
-            className="w-full h-full object-cover hover:scale-105 transition duration-500"
-          />
-        ) : (
-          <div className="w-full h-full bg-white/[0.03]" />
-        )}
-      </div>
+              {certificates.map((item) => (
+                <div
+                  key={item.id}
+                  className="border border-white/10 bg-white/[0.03] rounded-2xl p-4 hover:border-white/25 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                >
+                  {/* IMAGE */}
+                  <div className="w-full h-[150px] rounded-xl overflow-hidden bg-white/[0.03] mb-4">
+                    {item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-white/[0.03]" />
+                    )}
+                  </div>
 
-      {/* TITLE */}
-      <h2 className="font-semibold text-[15px] mb-3 line-clamp-2 min-h-[42px]">
-        {item.title}
-      </h2>
+                  {/* TITLE */}
+                  <h2 className="font-semibold text-[15px] mb-3 line-clamp-2 min-h-[42px]">
+                    {item.title}
+                  </h2>
 
-      {/* DATE */}
-      <span className="text-[11px] text-white/30 mb-4">
-        {item.created_at
-          ? new Date(
-              item.created_at
-            ).toLocaleDateString()
-          : "No Date"}
-      </span>
+                  {/* DATE */}
+                  <span className="text-[11px] text-white/30 mb-4">
+                    {item.created_at
+                      ? new Date(item.created_at).toLocaleDateString()
+                      : "No Date"}
+                  </span>
 
-      {/* ACTION */}
-      <div className="flex gap-2 mt-auto">
-        <button
-          onClick={() =>
-            handleEdit(item)
-          }
-          className="flex-1 px-3 py-2 rounded-xl border border-white/10 hover:bg-white/10 transition flex items-center justify-center gap-2 text-sm"
-        >
-          <Pencil size={14} />
-          Edit
-        </button>
+                  {/* ACTION */}
+                  <div className="flex gap-2 mt-auto">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="flex-1 px-3 py-2 rounded-xl border border-white/10 hover:bg-white/10 transition flex items-center justify-center gap-2 text-sm"
+                    >
+                      <Pencil size={14} />
+                      Edit
+                    </button>
 
-        <button
-          onClick={() =>
-            handleDelete(item.id)
-          }
-          className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition flex items-center justify-center text-red-300"
-        >
-          <Trash2 size={15} />
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition flex items-center justify-center text-red-300"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </main>
@@ -255,9 +265,7 @@ export default function CertificatesPage() {
             {/* HEADER */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg sm:text-xl font-semibold">
-                {editId
-                  ? "Edit Certificate"
-                  : "Add Certificate"}
+                {editId ? "Edit Certificate" : "Add Certificate"}
               </h2>
 
               <button
@@ -274,16 +282,10 @@ export default function CertificatesPage() {
             {/* IMAGE */}
             <label className="border border-dashed border-white/10 rounded-2xl bg-[#0f0f0f] h-44 sm:h-52 flex flex-col items-center justify-center cursor-pointer overflow-hidden mb-4">
               {preview ? (
-                <img
-                  src={preview}
-                  className="w-full h-full object-cover"
-                />
+                <img src={preview} className="w-full h-full object-cover" />
               ) : (
                 <>
-                  <Upload
-                    size={24}
-                    className="text-white/50 mb-2"
-                  />
+                  <Upload size={24} className="text-white/50 mb-2" />
 
                   <p className="text-sm text-white/60">
                     Upload Certificate Image
@@ -303,9 +305,7 @@ export default function CertificatesPage() {
             <input
               placeholder="Certificate Title"
               value={title}
-              onChange={(e) =>
-                setTitle(e.target.value)
-              }
+              onChange={(e) => setTitle(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none mb-5 text-sm"
             />
 

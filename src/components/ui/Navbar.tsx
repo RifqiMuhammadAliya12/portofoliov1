@@ -146,7 +146,7 @@ export default function Navbar() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '10px 20px',
+          padding: '10px 30px',
           width: '100%',
           borderRadius: 999,
           backgroundColor: scrolled

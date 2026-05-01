@@ -5,7 +5,7 @@ export const fetchProjects = async () => {
     .from('projects')
     .select('*')
     .order('created_at', {
-      ascending: false,
+      ascending: true,
     })
 
   return data || []
@@ -16,7 +16,7 @@ export const fetchCertificates = async () => {
     .from('certificates')
     .select('*')
     .order('created_at', {
-      ascending: false,
+      ascending: true,
     })
 
   return data || []
@@ -27,7 +27,7 @@ export const fetchTechStacks = async () => {
     .from('tech_stack')
     .select('*')
     .order('created_at', {
-      ascending: false,
+      ascending: true,
     })
 
   return data || []
