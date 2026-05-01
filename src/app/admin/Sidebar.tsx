@@ -64,13 +64,19 @@ export default function Sidebar() {
     setOpen(false);
   }, [pathname]);
 
-  const SidebarContent = () => (
+  const SidebarContent = ({
+    hideTitle = false,
+  }: {
+    hideTitle?: boolean;
+  }) => (
     <>
       {/* TOP */}
       <div>
-        <h1 className="text-lg font-semibold mb-8 tracking-wide text-white">
-          Admin Panel
-        </h1>
+        {!hideTitle && (
+          <h1 className="text-lg font-semibold mb-8 tracking-wide text-white">
+            Admin Panel
+          </h1>
+        )}
 
         <nav className="space-y-2">
           {menus.map((menu, i) => {
@@ -157,9 +163,10 @@ export default function Sidebar() {
         </aside>
       )}
 
-      {/* MOBILE TOP BAR */}
+      {/* MOBILE */}
       {isMobile && (
         <>
+          {/* TOP BAR */}
           <div className="fixed top-0 left-0 right-0 h-[70px] bg-black/95 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-5 z-[60]">
             <h1 className="text-white font-semibold text-base">
               Admin Panel
@@ -173,7 +180,7 @@ export default function Sidebar() {
             </button>
           </div>
 
-          {/* MOBILE DRAWER */}
+          {/* DRAWER */}
           <AnimatePresence>
             {open && (
               <>
@@ -186,7 +193,7 @@ export default function Sidebar() {
                   className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[70]"
                 />
 
-                {/* DRAWER */}
+                {/* SIDEBAR */}
                 <motion.aside
                   initial={{ x: -280 }}
                   animate={{ x: 0 }}
@@ -212,8 +219,9 @@ export default function Sidebar() {
                     </button>
                   </div>
 
+                  {/* CONTENT */}
                   <div className="flex-1 flex flex-col justify-between">
-                    <SidebarContent />
+                    <SidebarContent hideTitle />
                   </div>
                 </motion.aside>
               </>
