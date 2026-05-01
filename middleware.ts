@@ -26,8 +26,15 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // 🔒 proteksi /admin
-  if (!session && req.nextUrl.pathname.startsWith("/admin")) {
+  const pathname = req.nextUrl.pathname;
+
+  // ✅ biarin login page lewat
+  if (pathname === "/admin/login") {
+    return res;
+  }
+
+  // 🔒 protect admin page selain login
+  if (!session && pathname.startsWith("/admin")) {
     return NextResponse.redirect(new URL("/admin/login", req.url));
   }
 
